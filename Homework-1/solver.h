@@ -37,3 +37,5 @@ bool move(int x, int y) { return false; }
 void showMaze() {}
 
 #endif /* solver_h */
+ // hi
+ 
