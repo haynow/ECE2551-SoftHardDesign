@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <limits.h>
-#include <LiquidCrystal.h>
+#include “LiquidCrystal/src/LiquidCrystal.h”
 
 // Constants
 const int eepromSize = 1024; // EEPROM size
