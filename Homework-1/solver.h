@@ -6,6 +6,8 @@
 //  Copyright © 2016 Xavier Merino. All rights reserved.
 //
 
+// Not Plagarized
+
 #ifndef solver_h
 #define solver_h
 
