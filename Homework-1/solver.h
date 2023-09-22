@@ -79,11 +79,11 @@ if ((x == 15)&&(y==15))
 }
 
 //right
-if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0))
+if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0))  // If you CAN move
 {
       if (x < 15)
       {
-         if (move(x + 1, y))
+         if (move(x + 1, y)) //move
          {
             return true;
          }
@@ -91,11 +91,11 @@ if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0))
 }
 
 //down
-if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0))
+if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0)) // If you CAN move
 {
       if (x < 15)
       {
-         if (move(x, y + 1))
+         if (move(x, y + 1)) //move
          {
             return true;
          }
@@ -103,11 +103,11 @@ if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0))
 }
 
 //left
-if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0))
+if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0)) // If you CAN move
 {
       if (x < 15)
       {
-         if (move(x - 1, y))
+         if (move(x - 1, y)) //move
          {
             return true;
          }
@@ -115,11 +115,11 @@ if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0))
 }
 
 //up
-if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0))
+if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0)) // If you CAN move
 {
       if (x < 15)
       {
-         if (move(x, y - 1))
+         if (move(x, y - 1)) //move
          {
             return true;
          }
