@@ -64,3 +64,66 @@ void showMaze() {}
 
 
 #endif /* solver_h */
+
+
+//======================================================================================
+
+bool move(int x, int y){
+
+setPathBit(x, y);
+
+//Is maze solved?
+if ((x == 15)&&(y==15))
+{
+   return true;
+}
+
+//right
+if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0))
+{
+      if (x < 15)
+      {
+         if (move(x + 1, y))
+         {
+            return true;
+         }
+      }
+}
+
+//down
+if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0))
+{
+      if (x < 15)
+      {
+         if (move(x, y + 1))
+         {
+            return true;
+         }
+      }
+}
+
+//left
+if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0))
+{
+      if (x < 15)
+      {
+         if (move(x - 1, y))
+         {
+            return true;
+         }
+      }
+}
+
+//up
+if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0))
+{
+      if (x < 15)
+      {
+         if (move(x, y - 1))
+         {
+            return true;
+         }
+      }
+}
+
+}
