@@ -1,137 +1,175 @@
-#include <Arduino.h>
-#include <EEPROM.h>
 #include <limits.h>
-#include “LiquidCrystal/src/LiquidCrystal.h”
+#include <LiquidCrystal.h>
+#include <avr/eeprom.h>
 
-// Constants
-const int eepromSize = 1024; // EEPROM size
-const int tokenCount = 10;   // Number of tokens to generate
-const unsigned short USHRT_MAX_LIMIT = USHRT_MAX;
-const int buttonPin = 7;     // Button is connected to pin 7
+unsigned short save;
+unsigned short currentNum;
+unsigned long lastTime = 3000;
+unsigned short systemTime = 0;
 
-// Pin configuration for LCD
-const int rs = 11;            // Pin 11 on Arduino
-const int enable = 12;        // Pin 12 on Arduino
-const int d0 = 5;             // Pin 5 on Arduino
-const int d1 = 4;             // Pin 4 on Arduino
-const int d2 = 3;             // Pin 3 on Arduino
-const int d3 = 2;             // Pin 2 on Arduino
+int buttonState;
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+const int buttonPin = 7;
+unsigned short randNumber[10] = {};
 
-// Classes
+
+//--------------------------------------------------------------------------
 class Eeprom {
-public:
-  Eeprom() {}
+  public:
+    Eeprom(){}
+    
+    byte read(unsigned int uiAddress) {
+    
+    // Wait for completion of previous write
+    while(EECR & (1<<EEPE))
+    ;
+    // Set up address register
+    EEAR = uiAddress;
+    
+    // Start eeprom read by writing EERE 
+    
+    EECR |= (1<<EERE);
+    // Return data from Data Register 
+    
+    return EEDR;
+    }
+           
+    void write(unsigned int uiAddress, unsigned char ucData) {
+    
+     // Wait for completion of previous write 
+     while (EECR & (1<<EEPE));
+     
+    //Set up address and Data Registers
+    EEAR = uiAddress;    
+    
+    EEDR = ucData;
+    
+    // Write logical one to EEMPE
+    EECR |= (1<<EEMPE);
+    
+    // Start eeprom write by setting EEPE 
+    EECR |= (1<<EEPE);
+    }
+    };
+Eeprom eeprom1;
 
-  byte read(unsigned int uiAddress) {
-    while (EECR & (1 << EEPE));
-    return EEPROM.read(uiAddress);
-  }
-
-  void write(unsigned int uiAddress, byte data) {
-    while (EECR & (1 << EEPE));
-    EEPROM.write(uiAddress, data);
-  }
-};
+//--------------------------------------------------------------------------
 
 class Button {
-public:
-  Button(unsigned short pin) {
-    pinMode(pin, INPUT_PULLUP);
-    _pin = pin;
-    _lastState = LOW;
-    _lastDebounceTime = 0;
-    _debounceDelay = 50; // Adjust this for your button
-  }
-
-  bool hasBeenPushed() {
-    int reading = digitalRead(_pin);
-    if (reading != _lastState) {
-      _lastDebounceTime = millis();
+  public:
+    Button(unsigned short buttonPin) {
+      this ->buttonPin = buttonPin;
+      lastReading = LOW;
+       pinMode (buttonPin, INPUT);
     }
-
-    if ((millis() - _lastDebounceTime) > _debounceDelay) {
-      if (reading != _buttonState) {
-        _buttonState = reading;
-
-        if (_buttonState == HIGH) {
-          return true;
+    
+      bool hasBeenPushed() {
+        byte newReading = digitalRead (buttonPin);
+        
+        if (newReading != lastReading ){
+          lastDebounceTime = millis();
         }
-      }
-    }
+        if (millis() -lastDebounceTime > debounceDelay){
+          state = newReading;
+          return state;
+        }
+        lastReading = newReading;
 
-    _lastState = reading;
-    return false;
-  }
+   }
 
 private:
-  unsigned short _pin;
-  int _lastState;
-  int _buttonState;
-  unsigned long _lastDebounceTime;
-  unsigned long _debounceDelay;
+    unsigned short buttonPin =7;
+    unsigned long debounceDelay =50;
+    unsigned long lastDebounceTime =0;
+    unsigned short state; 
+    unsigned short lastReading;
 };
 
-// Global variables
-unsigned short tokens[tokenCount]; // Array to store tokens
-unsigned int currentAddress = 0;   // Current EEPROM address to read
-unsigned long lastUpdateTime = 0;  // Store the last time the EEPROM was updated
-unsigned long lastButtonPressTime = 0; // Store the time of the last button press
-const unsigned long updateInterval = 10000; // 10 seconds
-const unsigned long displayDuration = 3000; // 3 seconds
-bool displayToken = false; // Flag to control token display
+//--------------------------------------------------------------------------
+   
+#define buttonPin 7   
+Button btn (buttonPin);
+
+
+const unsigned short EEPROM_START_ADDRESS = 0;
+const unsigned short MAX = USHRT_MAX;
+const unsigned short MIN = 10000;
+
+//--------------------------------------------------------------------------
 
 void setup() {
-  // Initialize EEPROM and load tokens
-  Eeprom eeprom;
-  randomSeed(analogRead(0)); // Initialize random number generator
-  for (int i = 0; i < tokenCount; i++) {
-    unsigned short token = random(10000, USHRT_MAX_LIMIT);
-    byte highByte = highByte(token);
-    byte lowByte = lowByte(token);
-    eeprom.write(i * 2, highByte); // Store high byte
-    eeprom.write(i * 2 + 1, lowByte); // Store low byte
-    tokens[i] = token;
-  }
+  save = 0; // Initialize save to 0
+  lcd.begin(16, 2);
+  lcd.setCursor(0,0); 
 
-  pinMode(buttonPin, INPUT_PULLUP); // Use internal pull-up resistor for the button
-  lcd.begin(16, 2); // Initialize the LCD for 16x2 display
-  lcd.noDisplay();  // Turn off the display initially
+if (eeprom1.read(0x20) == 21)
+  {
+    //do nothing
+  }else
+  {
+    generateRandom();
+    eeprom1.write(0x20,0);
+  }
+  pinMode(buttonPin, INPUT);
+  
 }
+
+//--------------------------------------------------------------------------
+
+byte high;
+byte low;
+void generateRandom(){
+  randomSeed(analogRead(0));
+  int i = 0;
+ for (int i= 0; i < 10; i++)
+ {
+  randNumber[i] = random(MIN, MAX); 
+  high = highByte(randNumber[i]);
+  low = lowByte(randNumber[i]);
+  eeprom1.write(2 * i, high);
+  eeprom1.write((2 * i) + 1,low);
+ }
+  
+}
+
+//--------------------------------------------------------------------------
+
+unsigned short recoverShort (int ind)
+{
+  save = ind;
+  unsigned short store;
+  high = eeprom1.read(2 * ind);
+  low = eeprom1.read((2 * ind) + 1);
+
+  store = (high << 8) |low;
+  return store;
+  
+}
+
+//--------------------------------------------------------------------------
 
 void loop() {
-  unsigned long currentTime = millis();
-
-  // Check if it's time to update the displayed token
-  if (currentTime - lastUpdateTime >= updateInterval) {
-    lastUpdateTime = currentTime;
-    displayToken = true;
+  if (btn.hasBeenPushed())
+  {
+        currentNum = recoverShort(save);
+        lcd.setCursor(0,0);
+        lcd.print ("Hardware Token:");
+        lcd.setCursor (0,1);
+        lcd.print(currentNum);
+        lcd.display();
+        lastTime = millis();
   }
-
-  // Check if the button has been pressed
-  Button button(buttonPin);
-  if (button.hasBeenPushed() && (currentTime - lastButtonPressTime >= displayDuration)) {
-    displayToken = true;
-    lastButtonPressTime = currentTime;
-  }
-
-  // Display the token if needed
-  if (displayToken) {
-    displayTokenOnLCD(tokens[currentAddress]);
-
-    // Reset the flag and increment the current address
-    displayToken = false;
-    currentAddress = (currentAddress + 1) % tokenCount;
-  }
-}
-
-void displayTokenOnLCD(unsigned short token) {
-  lcd.clear();
-  lcd.display(); // Turn on the display
-  lcd.setCursor(0, 0);
-  lcd.print("Hardware Token");
-  lcd.setCursor(0, 1);
-  lcd.print(token);
-  delay(displayDuration); // Display for 3 seconds
-  lcd.noDisplay(); // Turn off the display
+  
+  if (millis() - lastTime > 3000)
+    {
+    
+    lcd.noDisplay();
+    
+    }
+    if (millis() - systemTime > 10000)
+    {
+        save = (save + 1) % 10;
+        systemTime = millis();
+    }
+  
 }
