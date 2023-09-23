@@ -57,20 +57,9 @@ void setPathBit(int x, int y) {}
 
 void clearPath() {}
 
-bool move(int x, int y) { return false; }
-
-void showMaze() {}
-
-
-
-#endif /* solver_h */
-
-
-//======================================================================================
-
-bool move(int x, int y){
-
-setPathBit(x, y);
+bool move(int x, int y) { 
+   
+   setPathBit(x, y);
 
 //Is maze solved?
 if ((x == 15)&&(y==15))
@@ -127,3 +116,9 @@ if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0)) // If yo
 }
 
 }
+
+void showMaze() {}
+
+
+
+#endif /* solver_h */
