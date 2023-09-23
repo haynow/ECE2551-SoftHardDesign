@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "solver.h"
+#include "test.h"
 #include <bitset>
 
 TEST_CASE("First Maze", "[maze1]"){
