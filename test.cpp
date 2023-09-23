@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <array>
+#include <stdlib.h>
 #include <bitset>
 
 using namespace std;
