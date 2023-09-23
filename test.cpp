@@ -3,18 +3,20 @@
 #define solver_h
 
 #include <iostream>
-#include <array>
 #include <stdlib.h>
-#include <bitset>
+#include <array>
 
 using namespace std;
 
-enum BitType { Maze, Path };
+enum BitType { Maze, Path};
 
 const int MAZE_SIZE = 16;
 short mazeRows[MAZE_SIZE];
 short pathRows[MAZE_SIZE];
-bitset<MAZE_SIZE> actualMaze[MAZE_SIZE];
+short actualMaze[MAZE_SIZE];
+
+BitType bit1 = Maze;
+BitType bit2 = Path;
 
 void inputTestData(short data[]) {
    for(int i = 0; i < sizeof(data); i++){
@@ -42,9 +44,9 @@ short getBit(BitType type, int x, int y) {
         return -1; // Out of bounds
     }
     if (type == Maze) {
-        return actualMaze[y][x] ? 1 : 0;
+        return (actualMaze[y] >> (MAZE_SIZE - 1 - x)) & 1;
     } else {
-        return pathRows[y] & (1 << (MAZE_SIZE - 1 - x)) ? 1 : 0;
+        return (pathRows[y] >> (MAZE_SIZE - 1 - x)) & 1;
     }
 }
 
@@ -123,10 +125,10 @@ if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0)) // If yo
 void showMaze() {
     for (int i = 0; i < MAZE_SIZE; i++) {
         for (int j = 0; j < MAZE_SIZE; j++) {
-            if (pathRows[i] & (1 << (MAZE_SIZE - 1 - j))) {
+            if (getBit(Path, j, i) != 0) {
                 cout << "* ";
             } else {
-                cout << actualMaze[i][j] << " ";
+                cout << getBit(Maze, j, i) << " ";
             }
         }
         cout << endl;
@@ -134,3 +136,4 @@ void showMaze() {
 }
 
 #endif /* solver_h */
+
