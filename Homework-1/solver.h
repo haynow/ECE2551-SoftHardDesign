@@ -133,8 +133,6 @@ bool move(int x, int y)
 }
 
 
-
-
 void showMaze(){ // Prints Full Mazw to standard output stream (STD)
     for (int j = 0; j < 16; j++){
         // Rows
