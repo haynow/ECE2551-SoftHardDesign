@@ -1,13 +1,11 @@
-
+//
 //  solver.h
 //  MazeSolverM
 //
 //  Created by Xavier Merino on 8/28/16.
 //  Copyright © 2016 Xavier Merino. All rights reserved.
 //
-
-// Not Plagarized
-
+ using namespace std;
 #ifndef solver_h
 #define solver_h
 
@@ -15,110 +13,139 @@
 #include <stdlib.h>
 #include <array>
 
-using namespace std;
-
-enum BitType { Maze, Path};
-
-short mazeRows[16] = {0};
-short pathRows[16] = {0};
-short actualMaze[16][16];
-
-BitType bit1 = Maze;
-BitType bit2 = Path;
-
-
-void inputTestData(short data[]) {
-   for(int i = 0; i < sizeof(data); i++){
-      int binaryNum[32];
- 
-      // counter for binary array
-      int n = data[i];
-      int j = 0;
-      while (j > 0) {
-   
-         // storing remainder in binary array
-         binaryNum[j] = n % 2;
-         n = n / 2;
-         j++;
-      }
-
-      for (int k = 0; k < sizeof(binaryNum); k++){
-         actualMaze[i][k] = binaryNum[k];
-      }
-   }
-}
-
-short getBit(BitType type, int x, int y) { 
-   
-   
-   return -1; }
-
-void setPathBit(int x, int y) {}
-
-void clearPath() {}
-
-bool move(int x, int y) { 
-   
-   setPathBit(x, y);
-
-//Is maze solved?
-if ((x == 15)&&(y==15))
+enum BitType
 {
-   return true;
-}
+    Maze,
+    Path
+};
 
-//right
-if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0))  // If you CAN move
+const int SIZE_OF_MATH = 16;
+short mazeRows[SIZE_OF_MATH];
+short pathRows[SIZE_OF_MATH];
+short workingBinaryNum[16];
+
+void short_to_bin(short number) // Convert s a given short to a binary array, sets workingBinary to said array
 {
-      if (x < 15)
-      {
-         if (move(x + 1, y)) //move
-         {
-            return true;
-         }
-      }
+    int reverseBinaryNumber[16];
+
+    // counter for binary array
+    int n = (int)number;
+    int j = 0;
+    while (j > 0)
+    {
+    // storing remainder in binary array
+    reverseBinaryNumber[j] = n % 2;
+    n = n / 2;
+    j++;
+    }
+
+    for (int i = 0; i < 32; i++){
+        workingBinaryNum[i] = reverseBinaryNumber[31-i];
+    }
 }
 
-//down
-if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0)) // If you CAN move
+short bin_to_short (){  //Converts Binary number array to a string binary number then converts to a short (base 10)
+    string binOfString;
+    for (int i = 0; i < 16; i++){
+        binOfString += to_string(workingBinaryNum[i]);
+    }
+    short convertedNum = stoi(binOfString, nullptr, 2);
+    return convertedNum;
+} 
+
+void inputTestData(short data[]) // Gets Input From Driver File and Saves the data to mazeRows
 {
-      if (x < 15)
-      {
-         if (move(x, y + 1)) //move
-         {
-            return true;
-         }
-      }
+    for (int i = 0; i < SIZE_OF_MATH; i++)
+    {
+        mazeRows[i] = data[i];
+        pathRows[i] = 0;
+    }
+
 }
 
-//left
-if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0)) // If you CAN move
+short getBit(BitType type, int x, int y)
 {
-      if (x < 15)
-      {
-         if (move(x - 1, y)) //move
-         {
-            return true;
-         }
-      }
+    if (type == Maze){
+        short_to_bin(mazeRows[x]);
+        return workingBinaryNum[y];
+    }
+
+    else {
+        short_to_bin(pathRows[x]);
+        return workingBinaryNum[y];
+    }
 }
 
-//up
-if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0)) // If you CAN move
+void setPathBit(int x, int y){
+    short_to_bin(pathRows[x]);
+    workingBinaryNum[y] = 1;
+    pathRows[x] = bin_to_short();
+}
+
+void clearPath(){ // Sets whole array to 0
+    for (int i = 0; i < 16; i++){
+        pathRows[i] = 0;
+    }
+}
+
+bool move(int x, int y)
 {
-      if (x < 15)
-      {
-         if (move(x, y - 1)) //move
-         {
-            return true;
-         }
-      }
-}
+    if (x == 15 && y == 15){
+        setPathBit(x,y);
+        return true;
+    }
+
+    if (x < 15){
+        if (getBit(Maze, x + 1,y) == 0){ // Right
+            if (move (x + 1, y)){
+                setPathBit(x + 1, y);
+            }
+        }
+    }
+
+    if (y < 15){
+        if (getBit(Maze, x, y + 1) == 0){ // Down
+            if (move (x, y + 1)){
+                setPathBit(x, y + 1);
+            }
+        }
+    }
+
+    if (x > 0){
+        if (getBit(Maze, x - 1,y) == 0){ // Left
+            if (move (x - 1, y)){
+                setPathBit(x - 1, y);
+            }
+        }
+    }
+
+    if (y > 0){
+        if (getBit(Maze, x, y - 1) == 0){ // Down
+            if (move (x, y - 1)){
+                setPathBit(x, y - 1);
+            }
+        }
+    }
+
+    // Add base case
+    return false;
 
 }
 
-void showMaze() {}
 
+
+
+void showMaze(){ // Prints Full Mazw to standard output stream (STD)
+    for (int j = 0; j < 16; j++){
+        // Rows
+        short_to_bin(mazeRows[j]);
+        for (int i = 0; i < 16; i++){ // Columns
+            cout << workingBinaryNum[i];  
+        }
+        cout << endl;
+    }
+
+}
 
 
 #endif /* solver_h */
