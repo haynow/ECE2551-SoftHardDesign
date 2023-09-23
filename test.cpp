@@ -1,37 +1,60 @@
-#ifndef SOLVER_H
-#define SOLVER_H
+// solver.h
+#ifndef solver_h
+#define solver_h
 
 #include <iostream>
+#include <array>
+#include <bitset>
 
-short mazeRows[16] = {0};
-short pathRows[16] = {0};
+using namespace std;
 
-enum BitType {
-    Maze,
-    Path
-};
+enum BitType { Maze, Path };
+
+const int MAZE_SIZE = 16;
+short mazeRows[MAZE_SIZE];
+short pathRows[MAZE_SIZE];
+bitset<MAZE_SIZE> actualMaze[MAZE_SIZE];
 
 void inputTestData(short data[]) {
-    for (int i = 0; i < 16; i++) {
-        mazeRows[i] = data[i];
-    }
+   for(int i = 0; i < sizeof(data); i++){
+      int binaryNum[32];
+ 
+      // counter for binary array
+      int n = data[i];
+      int j = 0;
+      while (j > 0) {
+   
+         // storing remainder in binary array
+         binaryNum[j] = n % 2;
+         n = n / 2;
+         j++;
+      }
+
+      for (int k = 0; k < sizeof(binaryNum); k++){
+         actualMaze[i][k] = binaryNum[k];
+      }
+   }
 }
 
 short getBit(BitType type, int x, int y) {
-    short* sourceArray = (type == Maze) ? mazeRows : pathRows;
-    return (sourceArray[y] >> (15 - x)) & 1;
+    if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) {
+        return -1; // Out of bounds
+    }
+    if (type == Maze) {
+        return actualMaze[y][x] ? 1 : 0;
+    } else {
+        return pathRows[y] & (1 << (MAZE_SIZE - 1 - x)) ? 1 : 0;
+    }
 }
 
 void setPathBit(int x, int y) {
-    pathRows[y] |= (1 << (15 - x));
-}
-
-void clearPathBit(int x, int y) {
-    pathRows[y] &= ~(1 << (15 - x));
+    if (x >= 0 && x < MAZE_SIZE && y >= 0 && y < MAZE_SIZE) {
+        pathRows[y] |= (1 << (MAZE_SIZE - 1 - x));
+    }
 }
 
 void clearPath() {
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < MAZE_SIZE; i++) {
         pathRows[i] = 0;
     }
 }
@@ -93,20 +116,20 @@ if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0)) // If yo
          }
       }
 }
-return false;
+
 }
 
 void showMaze() {
-    for (int y = 0; y < 16; y++) {
-        for (int x = 0; x < 16; x++) {
-            if (getBit(Path, x, y) == 1) {
-                std::cout << "* ";
+    for (int i = 0; i < MAZE_SIZE; i++) {
+        for (int j = 0; j < MAZE_SIZE; j++) {
+            if (pathRows[i] & (1 << (MAZE_SIZE - 1 - j))) {
+                cout << "* ";
             } else {
-                std::cout << (getBit(Maze, x, y) ? "1 " : "0 ");
+                cout << actualMaze[i][j] << " ";
             }
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
-#endif // SOLVER_H
+#endif /* solver_h */
