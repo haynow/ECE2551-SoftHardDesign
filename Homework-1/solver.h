@@ -4,167 +4,138 @@
 #include <iostream>
 #include <stdlib.h>
 
-enum BitType { Maze, Path };
-short mazeRows[16];
-short pathRows[16];
+using namespace std;
 
-// Takes in values to put into the array.
-void inputTestData(short data[]) {
-    for (int i = 0; i < 16; i++) {
+enum BitType
+{
+    Maze,
+    Path
+};
+short mazeRows[16]; // Our Maze
+short pathRows[16]; // Our Followed Path
+
+void inputTestData(short data[]) // Get User Input from main.cpp
+{
+    for (int i = 0; i < 16; i++)
+    {
         mazeRows[i] = data[i];
     }
 }
 
-// Reads the bit depending on the parameters
-short getBit(BitType type, int x, int y) {
+short getBit(BitType type, int x, int y) // Reads a bit at given x / y value
+{
 
-    short value;
-
-    if (type == Maze) {
-        if (((mazeRows[y]) & (1 << (15 - x))) < 1) // Checks to see if the value masked from the row is less than one
+    if (type == Maze)
+    {
+        if (((mazeRows[y]) & (1 << (15 - x))) < 1)
         {
-            value = 0;
-        }
-        else    // If it is greater than one, it assigns one to value.
-        {
-            value = 1;
-        }
-    }
-    if (type == Path) {
-        if (((pathRows[y]) & (1 << (15 - x))) < 1)
-        {
-            value = 0;
+            return 0;
         }
         else
         {
-            value = 1;
-        }
-       
-    }
-    return value;
-}
-
-void setPathBit(int x, int y) // Marks the bit
-{
-   
-    pathRows[y] = (pathRows[y] | ((1 << (15 - x))));
-   
- 
-}
-// Cycles through each row making the value of each short zero, so the row is a row of zeroes.
-void clearPath() {
-    for (int i = 0; i < 16; i++) {
-        pathRows[i] = 0;
-    }
-
-}
-
-bool move(int x, int y) {
-   
-
-    // Begins by marking the bit.
-    setPathBit(x, y);    
-
-    // Checks to see if the last entry has been marked, which meaans is the maze solved?
-    if ((x == 15)&&(y==15))    // If it is solved, it returns true.
-    {
-        return true;
-    }
-    //===============================================================================================================================
-    // Not solved
-    if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0)) // Can move right?
-    {
-        if (x < 15) // Within maze
-        {
-            if (move(x + 1, y))  //Check to see if next space can move
-            {
-                return true;
-            }
-           
-        }
-    }
-    //================================================================================================================================
-
-    if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0)) //Can move down?
-    {
-        if (y < 15) // Within maze
-        {
-            if (move(x, y + 1)) // Check to see if next space can move
-            {
-                return true;
-            }
-           
-        }
-    }
-    //=================================================================================================================================
-
-    if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0)) // Can move left?
-    {
-        if (x > 0) // Within maze
-        {
-            if (move(x - 1, y)) // Checks to see if next space can move
-            {
-                return true;
-            }
-           
-        }
-    }
-    //=================================================================================================================================
-
-    if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0)) // Can move up?
-    {
-        if (y > 0)
-        {
-            if (move(x, y - 1)) // Checks to see if next space can move
-            {
-                return true;
-            }
-
-        }
-    }
-    //==================================================================================================================================
-   
-    pathRows[y] = ~((~pathRows[y]) | (1 << (15 - x))); // Unmark
-    return false;
-
-}
-
-void showMaze() {
-    if (getBit(Path, 15, 15) == 1) // Chacks to see if it has been solved
-    {
-        for (int i = 0; i < 16; i++) // Cycles through rows
-        {
-            for (int j = 0; j < 16; j++) // Cycle through columns
-            {
-                if((getBit(Maze, j, i) == 0) && (getBit(Path, j, i) == 1)) // If the maze value is different from the path value, then it prints a star.
-                {
-                    std::cout << " *";
-                }
-                else
-                {
-                    std::cout << " " << getBit(Maze, j, i); // Prints out which ever bit it reads
-                }
-
-            }
-            std::cout << std::endl;
+            return 1;
         }
     }
     else
     {
-        for (int i = 0; i < 16; i++) // If not solved then it cycles through each row and reads the bit from each element of the row and then prints it.
+        if (((pathRows[y]) & (1 << (15 - x))) < 1)
         {
-            for (int j = 0; j < 16; j++)
-            {
-                std::cout << " " << getBit(Path, j, i);
-            }
-            std::cout << std::endl;
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+}
+
+void setPathBit(int x, int y) { pathRows[y] = (pathRows[y] | ((1 << (15 - x)))); } // Sets the bit at x/y to a 1
+
+void clearPath() //Resets Path
+{
+    for (int i = 0; i < 16; i++)
+    {
+        pathRows[i] = 0;
+    }
+}
+
+bool move(int x, int y)
+{
+
+    setPathBit(x, y);
+
+    if ((x == 15) && (y == 15))
+    {
+        return true;
+    }
+
+    if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0) && (x < 15)) //right
+    {
+        if (move(x + 1, y))
+        {
+            return true;
         }
     }
 
-   
-       
-   
+    if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0) && (y < 15)) //down
+    {
+        if (move(x, y + 1))
+        {
+            return true;
+        }
+    }
 
+    if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0) && (x > 0)) //left
+    {
+        if (move(x - 1, y))
+        {
+            return true;
+        }
+    }
+
+    if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0) && (y > 0)) //up
+    {
+        if (move(x, y - 1))
+        {
+            return true;
+        }
+    }
+
+    pathRows[y] = ~((~pathRows[y]) | (1 << (15 - x)));
+    return false;
+}
+
+void showMaze()
+{
+    if (getBit(Path, 15, 15) == 1)
+    {
+        for (int i = 0; i < 16; i++) // rows
+        {
+            for (int j = 0; j < 16; j++) // columns
+            {
+                if ((getBit(Maze, j, i) == 0) && (getBit(Path, j, i) == 1))
+                {
+                    cout << " 1";
+                }
+                else
+                {
+                    cout << " " << getBit(Path, j, i);
+                }
+            }
+            cout << endl;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 16; i++)
+        {
+            for (int j = 0; j < 16; j++)
+            {
+                cout << " " << getBit(Path, j, i);
+            }
+            cout << endl;
+        }
+    }
 }
 
 #endif

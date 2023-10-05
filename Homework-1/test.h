@@ -4,72 +4,130 @@
 #include <iostream>
 #include <stdlib.h>
 
-using namespace std; 
+using namespace std;
 
-enum BitType { Maze, Path };
-short mazeRows[16];
-short pathRows[16];
+enum BitType
+{
+    Maze,
+    Path
+};
+short mazeRows[16]; // Our Maze
+short pathRows[16]; // Our Followed Path
 
-// Takes in values to put into the array.
-void inputTestData(short data[]) {for (int i = 0; i < 16; i++) {mazeRows[i] = data[i];}}
-
-// Reads the bit depending on the parameters
-short getBit(BitType type, int x, int y) {
-
-    if (type == Maze) {
-        if (((mazeRows[y]) & (1 << (15 - x))) < 1) { return 0;}
-        else { return 1;}
-    }
-    else {
-        if (((pathRows[y]) & (1 << (15 - x))) < 1){ return 0;}
-        else {return 1;}
+void inputTestData(short data[]) // Get User Input from main.cpp
+{
+    for (int i = 0; i < 16; i++)
+    {
+        mazeRows[i] = data[i];
     }
 }
 
-void setPathBit(int x, int y){ pathRows[y] = (pathRows[y] | ((1 << (15 - x))));}
+short getBit(BitType type, int x, int y) // Reads a bit at given x / y value
+{
 
-void clearPath() { for (int i = 0; i < 16; i++) {pathRows[i] = 0;}}
+    if (type == Maze)
+    {
+        if (((mazeRows[y]) & (1 << (15 - x))) < 1)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    else
+    {
+        if (((pathRows[y]) & (1 << (15 - x))) < 1)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+}
 
-bool move(int x, int y) {
-    setPathBit(x, y);    
+void setPathBit(int x, int y) { pathRows[y] = (pathRows[y] | ((1 << (15 - x)))); } // Sets the bit at x/y to a 1
 
-    if ((x == 15) && (y==15)){ return true;} // Base Case
+void clearPath() //Resets Path
+{
+    for (int i = 0; i < 16; i++)
+    {
+        pathRows[i] = 0;
+    }
+}
 
-    if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0) && (x < 15)){ return move(x + 1, y);} // Right
+bool move(int x, int y)
+{
 
-    if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0) && (y < 15)){ return move(x, y + 1);} // Down
+    setPathBit(x, y);
 
-    if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x-1, y)) == 0) && (x > 0)){ return move(x-1, y);} // Left
-    
-    if (((getBit(Maze, x, y-1)) == 0) && ((getBit(Path, x, y-1)) == 0) && (y > 0)){ return move(x, y-1);} // Up
-   
-    pathRows[y] = ~((~pathRows[y]) | (1 << (15 - x))); // Unmark
+    if ((x == 15) && (y == 15))
+    {
+        return true;
+    }
+
+    if (((getBit(Maze, x + 1, y)) == 0) && ((getBit(Path, x + 1, y)) == 0) && (x < 15)) //right
+    {
+        if (move(x + 1, y))
+        {
+            return true;
+        }
+    }
+
+    if (((getBit(Maze, x, y + 1)) == 0) && ((getBit(Path, x, y + 1)) == 0) && (y < 15)) //down
+    {
+        if (move(x, y + 1))
+        {
+            return true;
+        }
+    }
+
+    if (((getBit(Maze, x - 1, y)) == 0) && ((getBit(Path, x - 1, y)) == 0) && (x > 0)) //left
+    {
+        if (move(x - 1, y))
+        {
+            return true;
+        }
+    }
+
+    if (((getBit(Maze, x, y - 1)) == 0) && ((getBit(Path, x, y - 1)) == 0) && (y > 0)) //up
+    {
+        if (move(x, y - 1))
+        {
+            return true;
+        }
+    }
+
+    pathRows[y] = ~((~pathRows[y]) | (1 << (15 - x)));
     return false;
 }
 
-void showMaze() {
-    if (getBit(Path, 15, 15) == 1) // Chacks to see if it has been solved
+void showMaze()
+{
+    if (getBit(Path, 15, 15) == 1)
     {
-        for (int i = 0; i < 16; i++) // Cycles through rows
+        for (int i = 0; i < 16; i++) // rows
         {
-            for (int j = 0; j < 16; j++) // Cycle through columns
+            for (int j = 0; j < 16; j++) // columns
             {
-                if((getBit(Maze, j, i) == 0) && (getBit(Path, j, i) == 1))
+                if ((getBit(Maze, j, i) == 0) && (getBit(Path, j, i) == 1))
                 {
                     cout << " 1";
                 }
                 else
                 {
-                    cout << " " << getBit(Path, j, i); // Prints out which ever bit it reads
+                    cout << " " << getBit(Path, j, i);
                 }
-
             }
             cout << endl;
         }
     }
     else
     {
-        for (int i = 0; i < 16; i++) // If not solved then it cycles through each row and reads the bit from each element of the row and then prints it.
+        for (int i = 0; i < 16; i++)
         {
             for (int j = 0; j < 16; j++)
             {
