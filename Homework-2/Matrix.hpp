@@ -9,57 +9,63 @@
 #include <stdio.h>
 #include <vector>
 
-class Matrix {
-    
+class Matrix
+{
+
 public:
-    
     Matrix();
 
-    Matrix(const std::vector<std::vector<double>>& data);
-    
-    Status add(const Matrix& other);
-    
-    Status subtract(const Matrix& other);
-    
-    Status multiply(const Matrix& other);
-    
-    Status divide(double scalar);
-    
-    void multiply(double scalar);
-    
-    void transpose();
-    
-    void zero();
-    
-    void show() const;
-    
-    double getDeterminant();
-    
-    double getAt(int row, int column) const;
-    
-    int getRowSize() const;
-    
-    int getColSize() const;
-    
-    bool isSquare() const;
-    
-    bool hasSameDimensionAs(const Matrix& other);
-    
-    Matrix getMinor(int row, int column);
-    
-private:
-    
-    int rowSize;
-    
-    int colSize;
-    
-    std::vector<std::vector<double>> matrix;
+    enum Status
+    {
+        NoError,
+        DivideByZeroError,
+        DimensionError
+    };
 
+    Matrix(const std::vector<std::vector<double>> &data);
+
+    Status add(const Matrix &other);
+
+    Status subtract(const Matrix &other);
+
+    Status multiply(const Matrix &other);
+
+    Status divide(double scalar);
+
+    void multiply(double scalar);
+
+    void transpose();
+
+    void zero();
+
+    void show() const;
+
+    double getDeterminant();
+
+    double getAt(int row, int column) const;
+
+    int getRowSize() const;
+
+    int getColSize() const;
+
+    bool isSquare() const;
+
+    bool hasSameDimensionAs(const Matrix &other);
+
+    Matrix getMinor(int row, int column);
+
+private:
+    int rowSize;
+
+    int colSize;
+
+    std::vector<std::vector<double>> matrix;
 };
 
-class HelpingFunctions {
+class HelpingFunctions
+{
 public:
-    static double dotProduct(const std::vector<double>& x, const std::vector<double>& y);
+    static double dotProduct(const std::vector<double> &x, const std::vector<double> &y);
 };
 
 #endif /* Matrix_hpp */
