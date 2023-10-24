@@ -14,7 +14,6 @@ class Matrix
 
 public:
     Matrix();
-
     enum Status
     {
         NoError,

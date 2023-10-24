@@ -13,6 +13,12 @@
 
 using namespace std;
 
+Matrix::Matrix()
+{
+    rowSize = 0;
+    colSize = 0;
+}
+
 Matrix::Status Matrix::add(const Matrix &other)
 {
     if (getRowSize() != other.getRowSize() || getColSize() != other.getColSize())
@@ -20,9 +26,9 @@ Matrix::Status Matrix::add(const Matrix &other)
         return DimensionError;
     }
 
-    for (int i = 0; i <= getRowSize(); i++)
+    for (int i = 0; i < getRowSize(); i++)
     {
-        for (int j = 0; j <= getColSize(); j++)
+        for (int j = 0; j < getColSize(); j++)
         {
             matrix[i][j] = getAt(i, j) + other.getAt(i, j);
         }
@@ -37,9 +43,9 @@ Matrix::Status Matrix::subtract(const Matrix &other)
         return DimensionError;
     }
 
-    for (int i = 0; i <= getRowSize(); i++)
+    for (int i = 0; i < getRowSize(); i++)
     {
-        for (int j = 0; j <= getColSize(); j++)
+        for (int j = 0; j < getColSize(); j++)
         {
             matrix[i][j] = getAt(i, j) - other.getAt(i, j);
         }
@@ -54,9 +60,9 @@ Matrix::Status Matrix::multiply(const Matrix &other)
         return DimensionError;
     }
 
-    for (int i = 0; i <= getRowSize(); i++)
+    for (int i = 0; i < getRowSize(); i++)
     {
-        for (int j = 0; j <= getColSize(); j++)
+        for (int j = 0; j < getColSize(); j++)
         {
             matrix[i][j] = getAt(i, j) * other.getAt(j, i);
         }
@@ -66,9 +72,9 @@ Matrix::Status Matrix::multiply(const Matrix &other)
 
 Matrix::Status Matrix::divide(double scalar)
 {
-    for (int i = 0; i <= getRowSize(); i++)
+    for (int i = 0; i < getRowSize(); i++)
     {
-        for (int j = 0; j <= getColSize(); j++)
+        for (int j = 0; j < getColSize(); j++)
         {
             matrix[i][j] = getAt(i, j) / scalar;
         }
@@ -79,9 +85,9 @@ Matrix::Status Matrix::divide(double scalar)
 void Matrix::transpose()
 {
     Matrix other(matrix);
-    for (int i = 0; i <= getColSize(); i++)
+    for (int i = 0; i < getColSize(); i++)
     {
-        for (int j = 0; j <= getRowSize(); j++)
+        for (int j = 0; j < getRowSize(); j++)
         {
             other.matrix[i][j] = matrix[getColSize() - i][getRowSize() - j];
         }
@@ -92,9 +98,9 @@ void Matrix::transpose()
 void Matrix::zero()
 {
 
-    for (int i = 0; i <= getRowSize(); i++)
+    for (int i = 0; i < getRowSize(); i++)
     {
-        for (int j = 0; j <= getColSize(); j++)
+        for (int j = 0; j < getColSize(); j++)
         {
             matrix[i][j] = 0;
         }
@@ -103,17 +109,15 @@ void Matrix::zero()
 
 void Matrix::show() const
 {
-    for (int i = 0; i <= getRowSize(); i++)
+    for (int i = 0; i < getRowSize(); i++)
     {
-        for (int j = 0; j <= getColSize(); j++)
+        for (int j = 0; j < getColSize(); j++)
         {
-            printf("%d ", matrix[i][j]);
+            printf("%f ", matrix[i][j]);
         }
         cout << "\n";
     }
-};
-
-double Matrix::getDeterminant(){};
+}
 
 double Matrix::getAt(int row, int column) const
 {
@@ -139,5 +143,3 @@ bool Matrix::hasSameDimensionAs(const Matrix &other)
 {
     return (getRowSize() != other.getRowSize() || getColSize() != other.getColSize());
 };
-
-Matrix getMinor(int row, int column);
