@@ -13,13 +13,6 @@
 
 using namespace std;
 
-Matrix::Matrix(const std::vector<std::vector<double>> &data)
-{
-    this->matrix = data;
-    this->rowSize = data.size();
-    this->colSize = data[0].size();
-}
-
 Matrix::Status Matrix::add(const Matrix &other)
 {
     if (getRowSize() != other.getRowSize() || getColSize() != other.getColSize())

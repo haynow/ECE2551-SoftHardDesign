@@ -22,7 +22,12 @@ public:
         DimensionError
     };
 
-    Matrix(const std::vector<std::vector<double>> &data);
+    Matrix(const std::vector<std::vector<double>> &data)
+    {
+        this->matrix = data;
+        this->rowSize = data.size();
+        this->colSize = data[0].size();
+    }
 
     Status add(const Matrix &other);
 
