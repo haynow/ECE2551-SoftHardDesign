@@ -33,7 +33,7 @@ For more information on classes and objects you can follow this [tutorial](https
 
 3. The provided `MatrixException.hpp` file is the header file for the `MatrixException.cpp` file. Your task is to write the implementation code for each of the functions defined in `MatrixException.hpp`.  
 
-5. ~~In `Matrix.hpp`, create an `enum` and create a type alias for it, the type should be `Status`.~~ In `MatrixException.hpp` you will find an enum with all of the error codes possible. Your job is to use the enum as a key to obtain the description of the error found at `eventTable` in the  `MatrixException.cpp` file. Once this is done you will be able to throw `MatrixException` with an error key, the file path, and the line number in the program that caused the exception. You can use the standard predefined macros `__FILE__` to obtain the file path and `__LINE__` for the line number. Follow the comments on the `MatrixException.cpp` file for more details.
+5. In `Matrix.hpp`, create an `enum` and create a type alias for it, the type should be `Status`. In `MatrixException.hpp` you will find an enum with all of the error codes possible. Your job is to use the enum as a key to obtain the description of the error found at `eventTable` in the  `MatrixException.cpp` file. Once this is done you will be able to throw `MatrixException` with an error key, the file path, and the line number in the program that caused the exception. You can use the standard predefined macros `__FILE__` to obtain the file path and `__LINE__` for the line number. Follow the comments on the `MatrixException.cpp` file for more details.
 
 
 #### Self-Grading and Feedback
